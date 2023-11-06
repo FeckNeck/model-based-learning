@@ -1,11 +1,11 @@
 Package: modelBasedLearning
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Clustering par modèle de mélange de Poisson pour des données entières
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Author: Mathis Dousse & Inès Faivre
+Maintainer: <mathis.dousse@univ-lyon2.fr>
+Description: Modèle de mélange de Poisson, avec indépendance conditionnelle des variables.
+    L’algorithme EM est utilisé pour l’inférence du modèle, et le critère BIC est utilisé pour sélectionner le nombre optimal de composantes.
+License: MIT
 Encoding: UTF-8
 LazyData: true
