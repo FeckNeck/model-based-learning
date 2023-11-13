@@ -1,4 +1,4 @@
-em_poisson <- function(X, K=2, eps=0.02){
+em_poisson <- function(X, K=2, eps=.Machine$double.eps){
 
   error <- Inf
   x <- data.matrix(X)
@@ -50,6 +50,7 @@ em_poisson <- function(X, K=2, eps=0.02){
 
     #check convergence
     error <- abs(Qs - oldQ)
+    print(error)
     if(error < eps) break
     oldQ <- Qs
   }
