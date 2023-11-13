@@ -1,4 +1,4 @@
-Package: modelBasedLearning
+Package: Pmm
 Type: Package
 Title: Clustering par modèle de mélange de Poisson pour des données entières
 Version: 0.1.0
