@@ -1,10 +1,10 @@
-em_poisson <- function(X, clust=c(1,2,3), eps=0.002){
+em_poisson <- function(X, clust=3, eps=0.002){
 
   x <- data.matrix(X)
   n <- nrow(X)
   p <- ncol(X)
 
-  max_bic = 0
+  max_bic = -Inf
   df <- list(Lambdas = c(), pk = c(), clusters = c(), tk = c())
 
   for(K in clust){
@@ -23,30 +23,22 @@ em_poisson <- function(X, clust=c(1,2,3), eps=0.002){
 
       # E-STEP
       ## Total density
-      ds <- c()
+      pkds <- c()
       for(k in 1:K){
         d_row <- c()
-        d <- dpois(x, Lambdas[k,])
-        for(i in 1:n){
-          d_row <- c(d_row,prod(d[i,]))
+        d_total <- c()
+        for(c in 1:p){
+          dp <- dpois(x[,c], Lambdas[k,c])
+          d_row <- cbind(d_row,dp)
         }
-        ds <- c(ds,sum(d_row))
-      }
-      ds <- sum(ds)
-
-      ## Calculate Tk
-      pkds <- c()
-      tk <- c()
-      for(k in 1:K){
-        d_res <- c()
-        d <- dpois(x, Lambdas[k,])
         for(i in 1:n){
-          d_res <- c(d_res, prod(d[i,]))
+          d_total <- c(d_total, prod(d_row[i,]))
         }
-        pkd <- pk[k] * d_res
-        pkds <- cbind(pkds, pkd)
-        tk <- cbind(tk, pkd/ds)
+        pkd <- pk[k] * d_total
+        pkds <- cbind(pkds,pkd)
       }
+      tk <- pkds/rowSums(pkds)
+      colnames(tk) <- c(1:K)
 
       # M-step
       for(k in 1:K){
@@ -56,13 +48,21 @@ em_poisson <- function(X, clust=c(1,2,3), eps=0.002){
         pk[k] <- sum(tk[,k])/n
       }
 
-      # Calculate Likehood
-      qs <- c()
-      for(k in 1:K){
-        q <- sum(log(pkds)*tk)
-        qs <- c(qs,q)
+      # Calculate log Likehood
+      qs <- 0
+      for(i in 1:n){
+        for(k in 1:K){
+          qs <- qs + sum(tk[i,k] * log(dpois(x[i,], Lambdas[k,])))
+        }
       }
-      qs <- sum(qs)
+      #qs <- 1
+      #for (i in 1:n){
+      #  q_k <- 0
+      #  for(k in 1:K){
+      #    q_k <- q_k + (pk[k] * d_total[i,k])
+      #  }
+      #  qs <- qs * q_k
+      #}
 
       # check convergence
       error <- abs(qs - oldQ)
@@ -86,7 +86,8 @@ em_poisson <- function(X, clust=c(1,2,3), eps=0.002){
     }
 
     # BIC
-    bic <- -2 * qs + (K*p + K - 1) * log(n)
+    bic <- 2 * qs - (K*p + K - 1) * log(n) # (K*p + K - 1) -> v
+    cat("BIC : ", bic, " for k = ", K, "\n")
 
     # Keep result for best BIC between all k
     if(bic > max_bic){
@@ -105,14 +106,12 @@ em_poisson <- function(X, clust=c(1,2,3), eps=0.002){
 set.seed(14052000)
 
 n <- 200  # Number of rows
-lambda1 <- 3  # Poisson parameter for column 1
-lambda2 <- 5  # Poisson parameter for column 2
-lambda3 <- 7  # Poisson parameter for column 3
+Lambdas <- round(runif(3,1,10),0)
 
 # Generate random Poisson-distributed values
-x1 <- rpois(n, lambda1)
-x2 <- rpois(n, lambda2)
-x3 <- rpois(n, lambda3)
+x1 <- rpois(n, Lambdas[1])
+x2 <- rpois(n, Lambdas[2])
+x3 <- rpois(n, Lambdas[3])
 
 # Create the data frame
 X <- data.frame(x1, x2,x3)
@@ -120,4 +119,6 @@ X <- data.frame(x1, x2,x3)
 #### EXAMPLE: EM-based Clustering
 res <- em_poisson(X)
 
-# print(res)
+print(res)
+
+
