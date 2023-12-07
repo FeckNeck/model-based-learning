@@ -2,7 +2,7 @@
 \alias{em_poisson}
 \title{Em algorithm for multivariate Poisson distribution}
 \usage{
-em_poisson(X, K=2, eps=.Machine$double.eps)
+em_poisson(X, clust=2, eps=.Machine$double.eps)
 }
 \description{
 Calculates the maximum likelihood estimates of the parameters of a multivariate Poisson distribution using the EM algorithm.

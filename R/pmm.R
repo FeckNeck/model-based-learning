@@ -40,6 +40,14 @@ em_poisson <- function(X, clust = c(2, 3, 5), eps = 0.002) {
       tk <- pkds / rowSums(pkds)
       colnames(tk) <- c(1:K)
 
+      # M-step
+      for (k in 1:K) {
+        for (j in 1:p) {
+          Lambdas[k, j] <- sum(x[, j] * tk[, k]) / sum(tk[, k])
+        }
+        pk[k] <- sum(tk[, k]) / n
+      }
+
       # Calculate log Likehood
       qs <- 0
       for (i in 1:n) {
@@ -59,13 +67,7 @@ em_poisson <- function(X, clust = c(2, 3, 5), eps = 0.002) {
       #  qs <- qs * q_k
       # }
 
-      # M-step
-      for (k in 1:K) {
-        for (j in 1:p) {
-          Lambdas[k, j] <- sum(x[, j] * tk[, k]) / sum(tk[, k])
-        }
-        pk[k] <- sum(tk[, k]) / n
-      }
+
 
       # check convergence
       error <- abs(qs - oldQ)
@@ -111,3 +113,6 @@ em_poisson <- function(X, clust = c(2, 3, 5), eps = 0.002) {
 
   return(df)
 }
+
+data = read.csv("./bag_of_words.csv",sep = ",", header = TRUE)
+res2 <- em_poisson(data, c(2,3,5,7))
