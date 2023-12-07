@@ -72,7 +72,7 @@ even if it converges correctly, as can be seen in the following graph:
 ![Log-likelihood function plot](../log_likelihood_function.png)
 
 In order to solve our issue, we tried to use an alternative formula for
-the log-likelihood function: 
+the log-likelihood function:
 
 $\ell = \prod_{i}\sum_{k}p_kf_k(x_i)$
 
@@ -90,10 +90,10 @@ the *tk* matrix or the *pk* vector.
 
 ## Usage
 
-### Generated dataset
+### Generated data set
 
-Generate a data set with 3 columns of 200 observation of Poisson-distributed values with
-different parameters.
+Generate a data set with 3 columns of 200 observation of
+Poisson-distributed values with different parameters.
 
 ```{r}
 n <- 200  # Number of observations
@@ -113,16 +113,18 @@ res <- em_poisson(X, c(2,3,5))
 print(res)
 ```
 
-### "RealWorld dataset" Bag of Words
+### "Real World data set" Bag of Words
 
-the data set is a bag of words of 20 words and 100 documents. Each
-document is represented by a vector of 20 integers. Each integer
+The data set is a bag of words of 5 words and 300 documents. Each
+document is represented by a vector of 5 integers. Each integer
 represents the number of times the word appears in the document.
 
 ```{r}
-data = read.csv("../bag_of_words.txt",sep = ",", header = TRUE)
-res2 <- em_poisson(data, 5)
+data = read.csv("../bag_of_words.csv",sep = ",", header = TRUE)
+res2 <- em_poisson(data, c(2,3,5,7))
 ```
-The issue with this data set is that the log-likelihood function
-converges to 0 because the values of the *tk* matrix are so low for 
-a number of clusters greater than 2.
+
+We can see that the algorithm converges correctly. The log-likelihood
+function is increasing. In opposition to the generated data set, the BIC
+criterion is decreasing with the number of clusters until a certain
+threshold. Then, the BIC criterion is increasing.
