@@ -1,11 +1,11 @@
-em_poisson <- function(X, clust=c(2,3,4,5,10,20,30,40), eps=0.002){
+em_poisson <- function(X, clust=c(2,3,5), eps=0.002){
 
   x <- data.matrix(X)
   n <- nrow(X)
   p <- ncol(X)
 
   max_bic = -Inf
-  df <- list(Lambdas = c(), pk = c(), clusters = c(), tk = c())
+  df <- list(Lambdas = c(), pk = c(), clusters = c(), tk = c(), bic = c())
   bics <- c()
   qss <- c()
 
@@ -42,14 +42,6 @@ em_poisson <- function(X, clust=c(2,3,4,5,10,20,30,40), eps=0.002){
       tk <- pkds/rowSums(pkds)
       colnames(tk) <- c(1:K)
 
-      # M-step
-      for(k in 1:K){
-        for(j in 1:p){
-          Lambdas[k,j] <- sum(x[,j]*tk[,k])/sum(tk[,k])
-        }
-        pk[k] <- sum(tk[,k])/n
-      }
-
       # Calculate log Likehood
       qs <- 0
       for(i in 1:n){
@@ -68,6 +60,14 @@ em_poisson <- function(X, clust=c(2,3,4,5,10,20,30,40), eps=0.002){
       #  }
       #  qs <- qs * q_k
       #}
+
+      # M-step
+      for(k in 1:K){
+        for(j in 1:p){
+          Lambdas[k,j] <- sum(x[,j]*tk[,k])/sum(tk[,k])
+        }
+        pk[k] <- sum(tk[,k])/n
+      }
 
       # check convergence
       error <- abs(qs - oldQ)
@@ -95,17 +95,17 @@ em_poisson <- function(X, clust=c(2,3,4,5,10,20,30,40), eps=0.002){
     bics <- c(bics, bic)
     cat("BIC : ", bic, " for k = ", K, "\n")
 
-    # Keep result for best BIC between all k
+    # Keep results for best BIC between all k
     if(bic > max_bic){
       max_bic = bic
       df$Lambdas <- Lambdas
       df$pk <- pk
       df$clusters <- labels
       df$tk <- tk
+      df$bic <- c(as.integer(K), bic)
     }
 
   }
-
   # Plot BIC
   #plot(clust, bics, type="b", xlab="Number of clusters", ylab="BIC", main="BIC for Poisson Mixture Model")
 
@@ -114,23 +114,3 @@ em_poisson <- function(X, clust=c(2,3,4,5,10,20,30,40), eps=0.002){
 
   return(df)
 }
-
-set.seed(14052000)
-
-n <- 200  # Number of rows
-Lambdas <- round(runif(3,1,10),0)
-
-# Generate random Poisson-distributed values
-x1 <- rpois(n, Lambdas[1])
-x2 <- rpois(n, Lambdas[2])
-x3 <- rpois(n, Lambdas[3])
-
-# Create the data frame
-X <- data.frame(x1, x2,x3)
-
-#### EXAMPLE: EM-based Clustering
-res <- em_poisson(X)
-
-print(res)
-
-

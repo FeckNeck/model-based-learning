@@ -9,7 +9,7 @@ Calculates the maximum likelihood estimates of the parameters of a multivariate 
 }
 \arguments{
   \item{X}{a matrix of poisson distributed data}
-  \item{K}{the number of clusters}
+  \item{clust}{the number of clusters}
   \item{eps}{the convergence criterion}
 }
 \value{
@@ -17,9 +17,10 @@ Calculates the maximum likelihood estimates of the parameters of a multivariate 
   \item{pk}{proportions of observations for each clusters}
   \item{clusters}{The affected cluster for each observation}
   \item{tk}{probabilities of each observation to belong to each cluster}
+  \item{bic}{The selected number of clusters and its BIC criterion value}
 }
 \examples{
-n <- 200  # Number of rows
+n <- 200  # Number of observations
 lambda1 <- 3  # Poisson parameter for column 1
 lambda2 <- 5  # Poisson parameter for column 2
 lambda3 <- 7  # Poisson parameter for column 3
