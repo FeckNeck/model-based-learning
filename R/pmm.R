@@ -1,4 +1,4 @@
-em_poisson <- function(X, clust=3, eps=0.002){
+em_poisson <- function(X, clust=c(2,3,4,5,10,20,30,40), eps=0.002){
 
   x <- data.matrix(X)
   n <- nrow(X)
@@ -6,6 +6,8 @@ em_poisson <- function(X, clust=3, eps=0.002){
 
   max_bic = -Inf
   df <- list(Lambdas = c(), pk = c(), clusters = c(), tk = c())
+  bics <- c()
+  qss <- c()
 
   for(K in clust){
     error <- Inf
@@ -55,6 +57,9 @@ em_poisson <- function(X, clust=3, eps=0.002){
           qs <- qs + sum(tk[i,k] * log(dpois(x[i,], Lambdas[k,])))
         }
       }
+      qss <- c(qss, qs)
+
+      # Alternative way to calculate log Likehood
       #qs <- 1
       #for (i in 1:n){
       #  q_k <- 0
@@ -87,6 +92,7 @@ em_poisson <- function(X, clust=3, eps=0.002){
 
     # BIC
     bic <- 2 * qs - (K*p + K - 1) * log(n) # (K*p + K - 1) -> v
+    bics <- c(bics, bic)
     cat("BIC : ", bic, " for k = ", K, "\n")
 
     # Keep result for best BIC between all k
@@ -99,6 +105,12 @@ em_poisson <- function(X, clust=3, eps=0.002){
     }
 
   }
+
+  # Plot BIC
+  #plot(clust, bics, type="b", xlab="Number of clusters", ylab="BIC", main="BIC for Poisson Mixture Model")
+
+  # Plot log Likehood
+  #plot(qss, type="b", xlab="Number of iterations", ylab="Log Likehood", main="Log Likehood for Poisson Mixture Model")
 
   return(df)
 }
