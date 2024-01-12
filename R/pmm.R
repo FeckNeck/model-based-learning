@@ -113,6 +113,3 @@ em_poisson <- function(X, clust = c(2, 3, 5), eps = 0.002) {
 
   return(df)
 }
-
-data = read.csv("./bag_of_words.csv",sep = ",", header = TRUE)
-res2 <- em_poisson(data, c(2,3,5,7))
